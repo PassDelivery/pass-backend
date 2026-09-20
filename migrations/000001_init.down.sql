@@ -1,0 +1,14 @@
+DROP TABLE IF EXISTS order_items;
+DROP TABLE IF EXISTS deliveries;
+DROP TABLE IF EXISTS couriers;
+DROP TABLE IF EXISTS cart_items;
+DROP TABLE IF EXISTS dishes;
+DROP TABLE IF EXISTS dish_categories;
+DROP TABLE IF EXISTS carts;
+DROP TABLE IF EXISTS order_status_history;
+DROP TABLE IF EXISTS notifications;
+DROP TABLE IF EXISTS reviews;
+DROP TABLE IF EXISTS orders;
+DROP TABLE IF EXISTS addresses;
+DROP TABLE IF EXISTS restaurants;
+DROP TABLE IF EXISTS users;

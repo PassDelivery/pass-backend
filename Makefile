@@ -4,7 +4,21 @@ export
 export PROJECT_ROOT=${shell pwd}
 
 
+env-up:
+	@docker compose up -d pass-postgres
 
+env-down:
+	@docker compose down pass-postgres
+
+env-cleanup:
+  @read -p "Очитсить все volume файлы окружения? Данные будут утеряны. [y/n]: " ans; \
+	if [ "$$ans" = "y"]; then \
+		docker compose down pass-postgres port-forwarder && \
+		rm -rf out/pgdata && \
+		echo "Файлы окружения очищены.";
+	else \
+		echo "Очистка окружения отменена."; \
+	fi;
 
 migrate-create:
 	@if [ -z "$(seq)" ]; then \
@@ -20,18 +34,24 @@ migrate-create:
 
 
 migrate-action:
-	@if [ -z $("action") ]; then \
+	@if [ -z "$(action)" ]; then \
 		echo "Отсутствует необходимый параметр action. Пример make migrate-action action=up"; \
 		exit 1; \
 	fi; \
 	
-	@docker compose run pass-postgres-migrate \
+	@docker compose run --rm pass-postgres-migrate \
 		-path /migrations \
-		-database postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@pass-postgres:5432/${pPOSTGRES_DB}?sslmode=disable \
+		-database postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@pass-postgres:5432/${POSTGRES_DB}?sslmode=disable \
 		"$(action)"
 
 migrate-up:
 	@make migrate-action action=up
-
+	
 migrate-down:
 	@make migrate-action action=down
+
+forwarder-up:
+	@docker compose up -d port-forwarder
+
+forwarder-down:
+	@docker compose down port-forwarder
