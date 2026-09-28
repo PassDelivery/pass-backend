@@ -10,15 +10,17 @@ env-up:
 env-down:
 	@docker compose down pass-postgres
 
+
 env-cleanup:
-  @read -p "Очитсить все volume файлы окружения? Данные будут утеряны. [y/n]: " ans; \
-	if [ "$$ans" = "y"]; then \
+	@read -p "Очитсить все volume файлы окружения? Данные будут утеряны. [y/n]: " ans; \
+	if [ "$$ans" = "y" ]; then \
 		docker compose down pass-postgres port-forwarder && \
 		rm -rf out/pgdata && \
-		echo "Файлы окружения очищены.";
+		echo "Файлы окружения очищены."; \
 	else \
 		echo "Очистка окружения отменена."; \
-	fi;
+	fi
+
 
 migrate-create:
 	@if [ -z "$(seq)" ]; then \
@@ -55,3 +57,11 @@ forwarder-up:
 
 forwarder-down:
 	@docker compose down port-forwarder
+
+
+
+pass-run:
+	@export LOGGER_PATH=${PROJECT_ROOT}/out/logs && \
+	export POSTGRES_HOST=localhost && \
+	go mod tidy && \
+	go run cmd/passapp/main.go

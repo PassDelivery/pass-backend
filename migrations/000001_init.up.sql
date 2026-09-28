@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS users(
   name          TEXT        NOT NULL,
   phone         TEXT,
   role          TEXT        NOT NULL CHECK(role IN ('customer', 'restaurant_owner', 'courier', 'admin')),
-  created_at    TIMESTAMPTZ NOT NULL
+  created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE IF NOT EXISTS restaurants(
