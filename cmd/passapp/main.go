@@ -23,6 +23,10 @@ import (
 	users_service "github.com/PassDelivery/pass-backend/internal/features/users/service"
 	users_transport_http "github.com/PassDelivery/pass-backend/internal/features/users/transport/http"
 	"go.uber.org/zap"
+
+	restaurants_postgres_repository "github.com/PassDelivery/pass-backend/internal/features/restaurants/repository/postgres"
+	restaurants_service "github.com/PassDelivery/pass-backend/internal/features/restaurants/service"
+	restaurants_transport_http "github.com/PassDelivery/pass-backend/internal/features/restaurants/transport/http"
 )
 
 func main() {
@@ -78,7 +82,13 @@ func main() {
 		core_http_middleware.CORS("http://localhost:5173"),
 	)
 
+	log.Debug("Initializing feature", zap.String("feature", "restaurants"))
+	restaurantsRepository := restaurants_postgres_repository.NewRestaurantsRepository(pool)
+	restaurantsService := restaurants_service.NewRestaurantsService(restaurantsRepository)
+	restaurantsTransportHTTP := restaurants_transport_http.NewRestaurantsHTTPHandler(restaurantsService)
+
 	apiVersionRouter := core_http_server.NewApiVersionRouter(core_http_server.ApiVersion1)
+	apiVersionRouter.RegisterRoutes(restaurantsTransportHTTP.Routes()...)
 	apiVersionRouter.RegisterRoutes(usersTransportHTTP.Routes()...)
 	apiVersionRouter.RegisterRoutes(menegmentTransportHTTP.Routes()...)
 	apiVersionRouter.RegisterRoutes(ordersTransportHTTP.Routes()...)
