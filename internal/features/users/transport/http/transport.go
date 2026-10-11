@@ -72,17 +72,6 @@ func (h *UsersHTTPHandler) Routes() []core_http_server.Route {
 			Handler: h.LoginUser,
 		},
 		{
-			Method:  http.MethodPost,
-			Path:    "/internal/restaurants",
-			Handler: func(w http.ResponseWriter, r *http.Request) {},
-			Middleware: []core_http_middleware.Middleware{
-				core_http_middleware.Auth(h.token),
-				core_http_middleware.RequireRole(
-					domain.RoleRestaurantOwner,
-				),
-			},
-		},
-		{
 			Method: http.MethodGet,
 			Path: "/users/me",
 			Handler: h.GetUser,

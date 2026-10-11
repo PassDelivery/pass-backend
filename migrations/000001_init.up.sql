@@ -94,7 +94,7 @@ CREATE TABLE IF NOT EXISTS dishes(
   price_kopecks        BIGINT      NOT NULL,
   cooking_time_minutes INTEGER,
   is_available         BOOLEAN     NOT NULL,
-  created_at           TIMESTAMPTZ NOT NULL
+  created_at           TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE IF NOT EXISTS cart_items(
