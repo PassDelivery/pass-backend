@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS restaurants(
   address     TEXT        NOT NULL,
   phone       TEXT,
   is_open     BOOLEAN     NOT NULL DEFAULT false,
-  created_at  TIMESTAMPTZ NOT NULL
+  created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE IF NOT EXISTS addresses(
@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS addresses(
   apartment  TEXT,
   comment    TEXT,
   is_default BOOLEAN     NOT NULL DEFAULT false,
-  created_at TIMESTAMPTZ NOT NULL
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE IF NOT EXISTS orders(

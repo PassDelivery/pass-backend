@@ -22,5 +22,14 @@ func (h *UsersHTTPHandler) GetUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	responseHandler.JSONResponse(user, http.StatusOK)
+	userResp := GetUserResponseDTO{
+		ID: user.ID,
+		Email: user.Email,
+		Name: user.Name,
+		Phone: user.Phone,
+		Role: string(user.Role),
+		CreatedAt: user.CreatedAt,
+	}
+
+	responseHandler.JSONResponse(userResp, http.StatusOK)
 }

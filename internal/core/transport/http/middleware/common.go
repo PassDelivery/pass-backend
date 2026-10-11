@@ -128,7 +128,11 @@ func Auth(s *core_jwt.TokenService) Middleware {
 	}
 }
 
-func RequireRole(role domain.Role) Middleware {
+func RequireRole(roles ...domain.Role) Middleware {
+	roleSet := make(map[domain.Role]struct{}, len(roles))
+	for _, r := range roles {
+		roleSet[r] = struct{}{}
+	}
 
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -140,14 +144,32 @@ func RequireRole(role domain.Role) Middleware {
 				responseHandler.ErrorResponse(core_errors.ErrUnauthtorize, "jwt from context")
 				return
 			}
-			if role != claim.RoleUser {
-				responseHandler.ErrorResponse(core_errors.ErrForbidden, "not correct for hendler role")
+
+			if _, allowed := roleSet[claim.RoleUser]; !allowed {
+				responseHandler.ErrorResponse(core_errors.ErrForbidden, "role not allowed for this resource")
 				return
 			}
 
 			log.Debug("auth and validation ended")
-
 			next.ServeHTTP(w, r)
 		})
 	}
+}
+
+
+func CORS(allowedOrigin string) Middleware {
+    return func(next http.Handler) http.Handler {
+        return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+            w.Header().Set("Access-Control-Allow-Origin", allowedOrigin)
+            w.Header().Set("Access-Control-Allow-Headers", "Authorization, Content-Type")
+            w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE, OPTIONS")
+
+            if r.Method == http.MethodOptions {
+                w.WriteHeader(http.StatusNoContent)
+                return
+            }
+
+            next.ServeHTTP(w, r)
+        })
+    }
 }

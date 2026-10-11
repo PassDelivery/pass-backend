@@ -27,6 +27,13 @@ func (r Role) IsValid() bool {
 	return false
 }
 
+type User struct {
+	ID uuid.UUID
+	Email string
+	Name string
+	Phone *string
+}
+
 type UserRequest struct {
 	Email     string
 	Password  string
@@ -66,6 +73,16 @@ type UserPatch struct {
 	Email Nullable[string]
 	Name  Nullable[string]
 	Phone Nullable[string] 
+}
+
+func (p *UserPatch) Validate() error {
+	if p.Email.Set && p.Email.Value == nil {
+		return fmt.Errorf("Email dont be nil: %w", core_errors.ErrInvalidArgument)
+	}
+	if p.Name.Set && p.Name.Value == nil {
+		return fmt.Errorf("Name dont be nil: %w", core_errors.ErrInvalidArgument)
+	}
+	return nil
 }
 
 func NewUserResponse(
@@ -159,11 +176,55 @@ func (u *UserRequest) Validate() error {
 	return nil
 }
 
+func (u *GetUserResponse) Validate() error {
+
+	if err := ValidateEmail(u.Email); err != nil {
+		return fmt.Errorf("validate email: %w", err)
+	}
+
+	if strings.TrimSpace(u.Name) == "" {
+		return fmt.Errorf("name is required: %w", core_errors.ErrInvalidArgument)
+	}
+
+	if len(*u.Phone) != 0 {
+		if (*u.Phone)[0] != '+' || len(*u.Phone) < 12 {
+			return fmt.Errorf("Number hasnt first + or len < 12 symbols: %w", core_errors.ErrInvalidArgument)
+		}
+	}
+
+	return nil
+}
 
 func ValidateEmail(email string) error {
 	email = strings.ToLower(email)
 	if !strings.Contains(email, "@") {
 		return fmt.Errorf("invalid email name: %w", core_errors.ErrInvalidArgument)
 	}
+	return nil
+}
+
+func (u *GetUserResponse) ApplyPatch(patch UserPatch) error {
+	if err := patch.Validate(); err != nil {
+		return fmt.Errorf("validate user patch: %w", err)
+	}
+
+	tmp := *u
+
+	if patch.Email.Set {
+		tmp.Email = *patch.Email.Value
+	}
+	if patch.Name.Set {
+		tmp.Name = *patch.Name.Value
+	}
+	if patch.Phone.Set {
+		tmp.Phone = patch.Phone.Value
+	}
+
+	if err := tmp.Validate(); err != nil {
+		return fmt.Errorf("validate response user: %w", err)
+	}
+	
+	*u = tmp
+
 	return nil
 }

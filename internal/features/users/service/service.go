@@ -30,6 +30,35 @@ type UsersRepository interface {
 		ctx context.Context,
 		id uuid.UUID,
 	) (domain.GetUserResponse, error)
+	PatchUser(
+		ctx context.Context,
+		id uuid.UUID,
+		user domain.GetUserResponse,
+	) (domain.GetUserResponse, error)
+	GetAddresses(
+		ctx context.Context,
+		id uuid.UUID,
+	) ([]domain.AddressesResponse, error)
+	CreateAddress(
+		ctx context.Context,
+		address domain.AddressRequest,
+		id uuid.UUID,
+	) (domain.AddressesResponse, error)
+	PatchAddress(
+		ctx context.Context,
+		address domain.AddressRequest,
+		userId uuid.UUID,
+		addrID uuid.UUID,
+	) (domain.AddressesResponse, error)
+	GetAddress(
+		ctx context.Context,
+		addrID uuid.UUID,
+	) (domain.AddressRequest, error)
+	DeleteAddress(
+		ctx context.Context,
+		addrID uuid.UUID,
+		user_id uuid.UUID,
+	) (error)
 }
 
 func NewUsersService(
