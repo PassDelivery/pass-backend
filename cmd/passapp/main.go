@@ -13,13 +13,14 @@ import (
 	core_postgres_pool "github.com/PassDelivery/pass-backend/internal/core/repository/postgres/pool"
 	core_http_middleware "github.com/PassDelivery/pass-backend/internal/core/transport/http/middleware"
 	core_http_server "github.com/PassDelivery/pass-backend/internal/core/transport/server"
-	restaurants_postgres_repository "github.com/PassDelivery/pass-backend/internal/features/restaurants/repository/postgres"
-	restaurants_service "github.com/PassDelivery/pass-backend/internal/features/restaurants/service"
-	restaurants_transport_http "github.com/PassDelivery/pass-backend/internal/features/restaurants/transport/http"
 	users_postgres_repository "github.com/PassDelivery/pass-backend/internal/features/users/repository/postgres"
 	users_service "github.com/PassDelivery/pass-backend/internal/features/users/service"
 	users_transport_http "github.com/PassDelivery/pass-backend/internal/features/users/transport/http"
 	"go.uber.org/zap"
+
+	restaurants_postgres_repository "github.com/PassDelivery/pass-backend/internal/features/restaurants/repository/postgres"
+	restaurants_service "github.com/PassDelivery/pass-backend/internal/features/restaurants/service"
+	restaurants_transport_http "github.com/PassDelivery/pass-backend/internal/features/restaurants/transport/http"
 )
 
 func main() {
@@ -52,11 +53,6 @@ func main() {
 	usersService := users_service.NewUsersService(usersRepository, *token)
 	usersTransportHTTP := users_transport_http.NewUsersHTTPHandler(usersService, token)
 
-	log.Debug("Initializing feature", zap.String("feature", "restaurants"))
-	restaurantsRepository := restaurants_postgres_repository.NewRestaurantsRepository(pool)
-	restaurantsService := restaurants_service.NewRestaurantsService(restaurantsRepository)
-	restaurantsTransportHTTP := restaurants_transport_http.NewRestaurantsHTTPHandler(restaurantsService)
-
 	log.Debug("Initializing HTTP server")
 	httpServer := core_http_server.NewHTTPServer(
 		core_http_server.NewHTTPConfigMust(),
@@ -68,9 +64,14 @@ func main() {
 		core_http_middleware.CORS("http://localhost:5173"),
 	)
 
+	log.Debug("Initializing feature", zap.String("feature", "restaurants"))
+	restaurantsRepository := restaurants_postgres_repository.NewRestaurantsRepository(pool)
+	restaurantsService := restaurants_service.NewRestaurantsService(restaurantsRepository)
+	restaurantsTransportHTTP := restaurants_transport_http.NewRestaurantsHTTPHandler(restaurantsService)
+
 	apiVersionRouter := core_http_server.NewApiVersionRouter(core_http_server.ApiVersion1)
-	apiVersionRouter.RegisterRoutes(usersTransportHTTP.Routes()...)
 	apiVersionRouter.RegisterRoutes(restaurantsTransportHTTP.Routes()...)
+	apiVersionRouter.RegisterRoutes(usersTransportHTTP.Routes()...)
 	httpServer.RegisterAPIRouters(apiVersionRouter)
 
 	if err := httpServer.Run(ctx); err != nil {
