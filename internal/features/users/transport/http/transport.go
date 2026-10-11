@@ -34,6 +34,22 @@ type UsersService interface {
 		id uuid.UUID,
 		user domain.UserPatch,
 	) (domain.GetUserResponse, error)
+	GetAddresses(
+		ctx context.Context,
+	) ([]domain.AddressesResponse, error)
+	CreateAddress(
+		ctx context.Context,
+		request domain.AddressRequest,
+	) (domain.AddressesResponse, error)
+	PatchAddress(
+		ctx context.Context,
+		address domain.AddressPatch,
+		ID uuid.UUID,
+	) (domain.AddressesResponse, error)
+	DeleteAddress(
+		ctx context.Context,
+		addrID uuid.UUID,
+	) (error)
 }
 
 func NewUsersHTTPHandler(usersService UsersService, token *core_jwt.TokenService) *UsersHTTPHandler {
@@ -74,6 +90,67 @@ func (h *UsersHTTPHandler) Routes() []core_http_server.Route {
 				core_http_middleware.Auth(h.token),
 				core_http_middleware.RequireRole(
 					domain.RoleCustomer,
+					domain.RoleRestaurantOwner,
+				),
+			},
+		},
+		{
+			Method: http.MethodPatch,
+			Path: "/users/me",
+			Handler: h.PatchUser,
+			Middleware: []core_http_middleware.Middleware{
+				core_http_middleware.Auth(h.token),
+				core_http_middleware.RequireRole(
+					domain.RoleCustomer,
+					domain.RoleRestaurantOwner,
+				),
+			},
+		},
+		{
+			Method: http.MethodGet,
+			Path: "/users/me/addresses",
+			Handler: h.GetAddresses,
+			Middleware: []core_http_middleware.Middleware{
+				core_http_middleware.Auth(h.token),
+				core_http_middleware.RequireRole(
+					domain.RoleCustomer,
+					domain.RoleRestaurantOwner,
+				),
+			},
+		},
+		{
+			Method: http.MethodPost,
+			Path: "/users/me/addresses",
+			Handler: h.CreateAddress,
+			Middleware: []core_http_middleware.Middleware{
+				core_http_middleware.Auth(h.token),
+				core_http_middleware.RequireRole(
+					domain.RoleCustomer,
+					domain.RoleRestaurantOwner,
+				),
+			},
+		},
+		{
+			Method: http.MethodPatch,
+			Path: "/users/me/addresses/{id}",
+			Handler: h.PatchAddress,
+			Middleware: []core_http_middleware.Middleware{
+				core_http_middleware.Auth(h.token),
+				core_http_middleware.RequireRole(
+					domain.RoleCustomer,
+					domain.RoleRestaurantOwner,
+				),
+			},
+		},
+		{
+			Method: http.MethodDelete,
+			Path: "/users/me/addresses/{id}",
+			Handler: h.DeleteAddress,
+			Middleware: []core_http_middleware.Middleware{
+				core_http_middleware.Auth(h.token),
+				core_http_middleware.RequireRole(
+					domain.RoleCustomer,
+					domain.RoleRestaurantOwner,
 				),
 			},
 		},
