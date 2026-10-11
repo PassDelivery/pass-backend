@@ -13,6 +13,12 @@ import (
 	core_postgres_pool "github.com/PassDelivery/pass-backend/internal/core/repository/postgres/pool"
 	core_http_middleware "github.com/PassDelivery/pass-backend/internal/core/transport/http/middleware"
 	core_http_server "github.com/PassDelivery/pass-backend/internal/core/transport/server"
+	menegment_postgres_repository "github.com/PassDelivery/pass-backend/internal/features/menegment/repository/postgres"
+	menegment_service "github.com/PassDelivery/pass-backend/internal/features/menegment/service"
+	menegment_transport_http "github.com/PassDelivery/pass-backend/internal/features/menegment/transport/http"
+	orders_postgres_repository "github.com/PassDelivery/pass-backend/internal/features/orders/repository/postgres"
+	orders_service "github.com/PassDelivery/pass-backend/internal/features/orders/service"
+	orders_transport_http "github.com/PassDelivery/pass-backend/internal/features/orders/transport/http"
 	users_postgres_repository "github.com/PassDelivery/pass-backend/internal/features/users/repository/postgres"
 	users_service "github.com/PassDelivery/pass-backend/internal/features/users/service"
 	users_transport_http "github.com/PassDelivery/pass-backend/internal/features/users/transport/http"
@@ -43,11 +49,23 @@ func main() {
 	}
 	defer pool.Close()
 
+	token := core_jwt.NewTokenService(24 * time.Hour)
+
 	log.Debug("Initializing feature", zap.String("feature", "users"))
 	usersRepository := users_postgres_repository.NewUsersRepository(pool)
-	token := core_jwt.NewTokenService(24 * time.Hour)
 	usersService := users_service.NewUsersService(usersRepository, *token)
 	usersTransportHTTP := users_transport_http.NewUsersHTTPHandler(usersService, token)
+
+	log.Debug("Initializing feature", zap.String("feature", "menagment-restaurant"))
+	menegmentRepository := menegment_postgres_repository.NewMenegmentRepository(pool)
+	menegmentService := menegment_service.NewMenegmentService(menegmentRepository)
+	menegmentTransportHTTP := menegment_transport_http.NewMenegmentHTTPHandler(menegmentService, token)
+
+	log.Debug("Initializing feature", zap.String("feature", "orders"))
+	ordersRepository := orders_postgres_repository.NewOrdersRepository(pool)
+	ordersService := orders_service.NewOrdersService(ordersRepository)
+	ordersTransportHTTP := orders_transport_http.NewOrdersHTTPHandler(ordersService, token)
+
 
 	log.Debug("Initializing HTTP server")
 	httpServer := core_http_server.NewHTTPServer(
@@ -62,6 +80,8 @@ func main() {
 
 	apiVersionRouter := core_http_server.NewApiVersionRouter(core_http_server.ApiVersion1)
 	apiVersionRouter.RegisterRoutes(usersTransportHTTP.Routes()...)
+	apiVersionRouter.RegisterRoutes(menegmentTransportHTTP.Routes()...)
+	apiVersionRouter.RegisterRoutes(ordersTransportHTTP.Routes()...)
 	httpServer.RegisterAPIRouters(apiVersionRouter)
 
 	if err := httpServer.Run(ctx); err != nil {
