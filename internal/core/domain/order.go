@@ -34,6 +34,10 @@ func (s OrderStatus) IsValid() bool {
 	return false
 }
 
+func (s OrderStatus) CanCustomerCancel() bool {
+	return s == OrderStatusNew
+}
+
 func (s OrderStatus) CanRestaurantMoveTo(next OrderStatus) bool {
 	for _, st := range restaurantTransitions[s] {
 		if st == next {
@@ -55,6 +59,9 @@ type OrderResponse struct {
 	ID              uuid.UUID
 	UserID          uuid.UUID
 	RestID          uuid.UUID
+	RestName        string
+	CustomerName    string
+	CustomerPhone   *string
 	Status          OrderStatus
 	TotalKopecks    int64
 	DeliveryAddress string
@@ -62,4 +69,15 @@ type OrderResponse struct {
 	Items           []OrderItem
 	CreatedAt       time.Time
 	UpdatedAt       time.Time
+}
+
+type CreateOrderRequest struct {
+	AddressID uuid.UUID
+	Comment   *string
+}
+
+type OrderStatusChange struct {
+	Status    OrderStatus
+	ChangedBy uuid.UUID
+	ChangedAt time.Time
 }

@@ -22,6 +22,29 @@ type OrdersService interface {
 		orderID uuid.UUID,
 		status domain.OrderStatus,
 	) (domain.OrderResponse, error)
+	CreateOrder(
+		ctx context.Context,
+		order domain.CreateOrderRequest,
+	) (domain.OrderResponse, error)
+	GetOrders(
+		ctx context.Context,
+	) ([]domain.OrderResponse, error)
+	GetOrder(
+		ctx context.Context,
+		orderID uuid.UUID,
+	) (domain.OrderResponse, error)
+	CancelOrder(
+		ctx context.Context,
+		orderID uuid.UUID,
+	) (domain.OrderResponse, error)
+	GetStatusHistory(
+		ctx context.Context,
+		orderID uuid.UUID,
+	) ([]domain.OrderStatusChange, error)
+	GetRestaurantOrders(
+		ctx context.Context,
+		restID uuid.UUID,
+	) ([]domain.OrderResponse, error)
 }
 
 func NewOrdersHTTPHandler(os OrdersService, token *core_jwt.TokenService) *OrdersHTTPHandler {
@@ -32,7 +55,55 @@ func NewOrdersHTTPHandler(os OrdersService, token *core_jwt.TokenService) *Order
 }
 
 func (h *OrdersHTTPHandler) Routes() []core_http_server.Route {
+	customer := []core_http_middleware.Middleware{
+		core_http_middleware.Auth(h.token),
+		core_http_middleware.RequireRole(
+			domain.RoleCustomer,
+		),
+	}
+
 	return []core_http_server.Route{
+		{
+			Method:     http.MethodGet,
+			Path:       "/orders",
+			Handler:    h.GetOrders,
+			Middleware: customer,
+		},
+		{
+			Method:     http.MethodPost,
+			Path:       "/orders",
+			Handler:    h.CreateOrder,
+			Middleware: customer,
+		},
+		{
+			Method:     http.MethodGet,
+			Path:       "/orders/{id}",
+			Handler:    h.GetOrder,
+			Middleware: customer,
+		},
+		{
+			Method:     http.MethodPost,
+			Path:       "/orders/{id}/cancel",
+			Handler:    h.CancelOrder,
+			Middleware: customer,
+		},
+		{
+			Method:     http.MethodGet,
+			Path:       "/orders/{id}/status-history",
+			Handler:    h.GetStatusHistory,
+			Middleware: customer,
+		},
+		{
+			Method:  http.MethodGet,
+			Path:    "/internal/restaurants/{id}/orders",
+			Handler: h.GetRestaurantOrders,
+			Middleware: []core_http_middleware.Middleware{
+				core_http_middleware.Auth(h.token),
+				core_http_middleware.RequireRole(
+					domain.RoleRestaurantOwner,
+				),
+			},
+		},
 		{
 			Method:  http.MethodPatch,
 			Path:    "/internal/orders/{id}/status",
