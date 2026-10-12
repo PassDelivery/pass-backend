@@ -39,8 +39,8 @@ func (r *OrdersRepository) ChangeOrderStatus(
 	`
 
 	queryHistory := `
-	INSERT INTO order_status_history (order_id, status, changed_by, changed_at)
-	VALUES ($1, $2, $3, NOW());
+	INSERT INTO order_status_history (order_id, status, changed_by)
+	VALUES ($1, $2, $3);
 	`
 
 	queryItems := `

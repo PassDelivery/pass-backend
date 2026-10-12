@@ -39,8 +39,8 @@ CREATE TABLE IF NOT EXISTS orders(
   total_kopecks    BIGINT      NOT NULL,
   delivery_address TEXT        NOT NULL,
   comment          TEXT,
-  created_at       TIMESTAMPTZ NOT NULL,
-  updated_at       TIMESTAMPTZ NOT NULL
+  created_at       TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at       TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE IF NOT EXISTS reviews(
@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS reviews(
   restaurant_id UUID        NOT NULL REFERENCES restaurants(id),
   rating        INTEGER     NOT NULL CHECK(rating BETWEEN 1 AND 5),
   body          TEXT,
-  created_at    TIMESTAMPTZ NOT NULL
+  created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE IF NOT EXISTS notifications(
@@ -60,7 +60,7 @@ CREATE TABLE IF NOT EXISTS notifications(
   type       TEXT        NOT NULL,
   body       TEXT        NOT NULL,
   is_read    BOOLEAN     NOT NULL DEFAULT false,
-  created_at TIMESTAMPTZ NOT NULL
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE IF NOT EXISTS order_status_history(
@@ -68,14 +68,14 @@ CREATE TABLE IF NOT EXISTS order_status_history(
   order_id   UUID        NOT NULL REFERENCES orders(id),
   status     TEXT        NOT NULL,
   changed_by UUID        NOT NULL REFERENCES users(id),
-  changed_at TIMESTAMPTZ NOT NULL
+  changed_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE IF NOT EXISTS carts(
   id            UUID                 PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id       UUID        NOT NULL REFERENCES users(id) UNIQUE,
   restaurant_id UUID                 REFERENCES restaurants(id),
-  updated_at    TIMESTAMPTZ NOT NULL
+  updated_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE IF NOT EXISTS dish_categories(
@@ -110,7 +110,7 @@ CREATE TABLE IF NOT EXISTS couriers(
   user_id        UUID        NOT NULL REFERENCES users(id) UNIQUE,
   transport_type TEXT        NOT NULL,
   status         TEXT        NOT NULL CHECK(status IN ('offline', 'free', 'busy')) DEFAULT 'free',
-  created_at     TIMESTAMPTZ NOT NULL
+  created_at     TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE IF NOT EXISTS deliveries(
