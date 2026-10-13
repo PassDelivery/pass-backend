@@ -34,6 +34,10 @@ func (s *CouriersService) ChangeDeliveryStatus(
 		return domain.Delivery{}, fmt.Errorf("cant move delivery from %s to %s: %w", delivery.Status, status, core_errors.ErrConflict)
 	}
 
+	if status == domain.DeliveryStatusPickedUp && delivery.OrderStatus != domain.OrderStatusReady {
+		return domain.Delivery{}, fmt.Errorf("order is still %s: %w", delivery.OrderStatus, core_errors.ErrConflict)
+	}
+
 	if err := s.couriersRepository.ChangeDeliveryStatus(ctx, courier.ID, userID, deliveryID, delivery.Status, status); err != nil {
 		return domain.Delivery{}, fmt.Errorf("change delivery status in service: %w", err)
 	}

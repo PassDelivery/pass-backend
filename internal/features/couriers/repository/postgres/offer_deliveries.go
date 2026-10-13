@@ -36,14 +36,14 @@ func (r *CouriersRepository) OfferDeliveries(
 	queryDropStale := `
 	DELETE FROM deliveries d
 	USING orders o
-	WHERE d.order_id = o.id AND d.courier_id = $1 AND d.status = 'offered' AND o.status <> 'ready';
+	WHERE d.order_id = o.id AND d.courier_id = $1 AND d.status = 'offered' AND o.status NOT IN ('cooking', 'ready');
 	`
 
 	queryOffer := `
 	INSERT INTO deliveries (order_id, courier_id, status)
 	SELECT o.id, $1, 'offered'
 	FROM orders o
-	WHERE o.status = 'ready'
+	WHERE o.status IN ('cooking', 'ready')
 	AND NOT EXISTS (
 		SELECT 1 FROM deliveries d
 		WHERE d.order_id = o.id
