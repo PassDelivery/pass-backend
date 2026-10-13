@@ -57,9 +57,9 @@ func OrderStatusNotification(orderID uuid.UUID, status OrderStatus) OrderNotific
 	case OrderStatusAccepted:
 		return OrderNotification{Type: "order_accepted", Body: fmt.Sprintf("Ресторан принял ваш заказ %s", number)}
 	case OrderStatusCooking:
-		return OrderNotification{Type: "order_cooking", Body: fmt.Sprintf("Ваш заказ %s начали готовить", number)}
+		return OrderNotification{Type: "order_cooking", Body: fmt.Sprintf("Ваш заказ %s начали готовить, ищем курьера", number)}
 	case OrderStatusReady:
-		return OrderNotification{Type: "order_ready", Body: fmt.Sprintf("Заказ %s готов, ищем курьера", number)}
+		return OrderNotification{Type: "order_ready", Body: fmt.Sprintf("Заказ %s готов, курьер скоро его заберёт", number)}
 	case OrderStatusDelivering:
 		return OrderNotification{Type: "order_delivering", Body: fmt.Sprintf("Курьер забрал заказ %s и уже едет к вам", number)}
 	case OrderStatusDelivered:

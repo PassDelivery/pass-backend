@@ -104,7 +104,7 @@ func (r *CouriersRepository) AcceptDelivery(
 	if err := tx.QueryRow(ctx, queryOrder, orderID).Scan(&orderStatus); err != nil {
 		return fmt.Errorf("lock order: %w", err)
 	}
-	if orderStatus != domain.OrderStatusReady {
+	if orderStatus != domain.OrderStatusCooking && orderStatus != domain.OrderStatusReady {
 		return fmt.Errorf("order is %s: %w", orderStatus, core_errors.ErrConflict)
 	}
 
