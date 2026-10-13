@@ -108,7 +108,7 @@ CREATE TABLE IF NOT EXISTS cart_items(
 CREATE TABLE IF NOT EXISTS couriers(
   id             UUID                 PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id        UUID        NOT NULL REFERENCES users(id) UNIQUE,
-  transport_type TEXT        NOT NULL,
+  transport_type TEXT        NOT NULL DEFAULT 'foot',
   status         TEXT        NOT NULL CHECK(status IN ('offline', 'free', 'busy')) DEFAULT 'free',
   created_at     TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
@@ -118,7 +118,7 @@ CREATE TABLE IF NOT EXISTS deliveries(
   order_id     UUID         NOT NULL REFERENCES orders(id),
   courier_id   UUID         NOT NULL REFERENCES couriers(id),
   status       TEXT         NOT NULL CHECK(status IN ('offered', 'accepted', 'refused', 'picked_up', 'delivered')),
-  offered_at   TIMESTAMPTZ,
+  offered_at   TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
   responded_at TIMESTAMPTZ,
   delivered_at TIMESTAMPTZ
 );
