@@ -50,7 +50,7 @@ func (r *OrdersRepository) CreateOrder(
 	`
 
 	queryRestaurant := `
-	SELECT name, is_open
+	SELECT name, is_open, owner_id
 	FROM restaurants
 	WHERE id = $1;
 	`
@@ -70,6 +70,11 @@ func (r *OrdersRepository) CreateOrder(
 	queryHistory := `
 	INSERT INTO order_status_history (order_id, status, changed_by)
 	VALUES ($1, $2, $3);
+	`
+
+	queryNotification := `
+	INSERT INTO notifications (user_id, order_id, type, body)
+	VALUES ($1, $2, $3, $4);
 	`
 
 	queryClearItems := `
@@ -152,9 +157,10 @@ func (r *OrdersRepository) CreateOrder(
 	var (
 		restName string
 		isOpen   bool
+		ownerID  uuid.UUID
 	)
 
-	if err := tx.QueryRow(ctx, queryRestaurant, *restID).Scan(&restName, &isOpen); err != nil {
+	if err := tx.QueryRow(ctx, queryRestaurant, *restID).Scan(&restName, &isOpen, &ownerID); err != nil {
 		return domain.OrderResponse{}, fmt.Errorf("scan restaurant: %w", err)
 	}
 	if !isOpen {
@@ -202,6 +208,12 @@ func (r *OrdersRepository) CreateOrder(
 
 	if _, err := tx.Exec(ctx, queryHistory, resp.ID, domain.OrderStatusNew, userID); err != nil {
 		return domain.OrderResponse{}, fmt.Errorf("insert status history: %w", err)
+	}
+
+	notification := domain.NewOrderNotification(resp.ID, resp.TotalKopecks)
+
+	if _, err := tx.Exec(ctx, queryNotification, ownerID, resp.ID, notification.Type, notification.Body); err != nil {
+		return domain.OrderResponse{}, fmt.Errorf("insert notification: %w", err)
 	}
 
 	if _, err := tx.Exec(ctx, queryClearItems, cartID); err != nil {
