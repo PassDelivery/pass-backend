@@ -39,6 +39,10 @@ import (
 	reviews_postgres_repository "github.com/PassDelivery/pass-backend/internal/features/reviews/repository/postgres"
 	reviews_service "github.com/PassDelivery/pass-backend/internal/features/reviews/service"
 	reviews_transport_http "github.com/PassDelivery/pass-backend/internal/features/reviews/transport/http"
+
+	notifications_postgres_repository "github.com/PassDelivery/pass-backend/internal/features/notifications/repository/postgres"
+	notifications_service "github.com/PassDelivery/pass-backend/internal/features/notifications/service"
+	notifications_transport_http "github.com/PassDelivery/pass-backend/internal/features/notifications/transport/http"
 )
 
 func main() {
@@ -114,6 +118,11 @@ func main() {
 	reviewsService := reviews_service.NewReviewsService(reviewsRepository)
 	reviewsTransportHTTP := reviews_transport_http.NewReviewsHTTPHandler(reviewsService, token)
 
+	log.Debug("Initializing feature", zap.String("feature", "notifications"))
+	notificationsRepository := notifications_postgres_repository.NewNotificationsRepository(pool)
+	notificationsService := notifications_service.NewNotificationsService(notificationsRepository)
+	notificationsTransportHTTP := notifications_transport_http.NewNotificationsHTTPHandler(notificationsService, token)
+
 	apiVersionRouter := core_http_server.NewApiVersionRouter(core_http_server.ApiVersion1)
 	apiVersionRouter.RegisterRoutes(restaurantsTransportHTTP.Routes()...)
 	apiVersionRouter.RegisterRoutes(usersTransportHTTP.Routes()...)
@@ -122,6 +131,7 @@ func main() {
 	apiVersionRouter.RegisterRoutes(cartTransportHTTP.Routes()...)
 	apiVersionRouter.RegisterRoutes(couriersTransportHTTP.Routes()...)
 	apiVersionRouter.RegisterRoutes(reviewsTransportHTTP.Routes()...)
+	apiVersionRouter.RegisterRoutes(notificationsTransportHTTP.Routes()...)
 	httpServer.RegisterAPIRouters(apiVersionRouter)
 
 	if err := httpServer.Run(ctx); err != nil {

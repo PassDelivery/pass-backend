@@ -42,12 +42,18 @@ func (r *CouriersRepository) ChangeDeliveryStatus(
 	queryOrder := `
 	UPDATE orders
 	SET status = $1, updated_at = NOW()
-	WHERE id = $2;
+	WHERE id = $2
+	RETURNING user_id;
 	`
 
 	queryHistory := `
 	INSERT INTO order_status_history (order_id, status, changed_by)
 	VALUES ($1, $2, $3);
+	`
+
+	queryNotification := `
+	INSERT INTO notifications (user_id, order_id, type, body)
+	VALUES ($1, $2, $3, $4);
 	`
 
 	queryFree := `
@@ -68,12 +74,20 @@ func (r *CouriersRepository) ChangeDeliveryStatus(
 
 	orderStatus := to.OrderStatus()
 
-	if _, err := tx.Exec(ctx, queryOrder, orderStatus, orderID); err != nil {
+	var customerID uuid.UUID
+
+	if err := tx.QueryRow(ctx, queryOrder, orderStatus, orderID).Scan(&customerID); err != nil {
 		return fmt.Errorf("update order: %w", err)
 	}
 
 	if _, err := tx.Exec(ctx, queryHistory, orderID, orderStatus, userID); err != nil {
 		return fmt.Errorf("insert status history: %w", err)
+	}
+
+	notification := domain.OrderStatusNotification(orderID, orderStatus)
+
+	if _, err := tx.Exec(ctx, queryNotification, customerID, orderID, notification.Type, notification.Body); err != nil {
+		return fmt.Errorf("insert notification: %w", err)
 	}
 
 	if to == domain.DeliveryStatusDelivered {

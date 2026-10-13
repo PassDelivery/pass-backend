@@ -43,6 +43,17 @@ func (r *OrdersRepository) ChangeOrderStatus(
 	VALUES ($1, $2, $3);
 	`
 
+	queryOwner := `
+	SELECT owner_id
+	FROM restaurants
+	WHERE id = $1;
+	`
+
+	queryNotification := `
+	INSERT INTO notifications (user_id, order_id, type, body)
+	VALUES ($1, $2, $3, $4);
+	`
+
 	queryItems := `
 	SELECT id, dish_id, dish_name, quantity, price_at_order_time
 	FROM order_items
@@ -71,6 +82,20 @@ func (r *OrdersRepository) ChangeOrderStatus(
 
 	if _, err := tx.Exec(ctx, queryHistory, orderID, to, changedBy); err != nil {
 		return domain.OrderResponse{}, fmt.Errorf("insert status history: %w", err)
+	}
+
+	recipientID := order.UserID
+
+	if to == domain.OrderStatusCancelled {
+		if err := tx.QueryRow(ctx, queryOwner, order.RestID).Scan(&recipientID); err != nil {
+			return domain.OrderResponse{}, fmt.Errorf("scan restaurant owner: %w", err)
+		}
+	}
+
+	notification := domain.OrderStatusNotification(orderID, to)
+
+	if _, err := tx.Exec(ctx, queryNotification, recipientID, orderID, notification.Type, notification.Body); err != nil {
+		return domain.OrderResponse{}, fmt.Errorf("insert notification: %w", err)
 	}
 
 	rows, err := tx.Query(ctx, queryItems, orderID)
