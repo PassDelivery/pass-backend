@@ -86,7 +86,6 @@ func main() {
 	ordersService := orders_service.NewOrdersService(ordersRepository)
 	ordersTransportHTTP := orders_transport_http.NewOrdersHTTPHandler(ordersService, token)
 
-
 	log.Debug("Initializing HTTP server")
 	httpServer := core_http_server.NewHTTPServer(
 		core_http_server.NewHTTPConfigMust(),
@@ -95,7 +94,7 @@ func main() {
 		core_http_middleware.Logger(log),
 		core_http_middleware.Panic(),
 		core_http_middleware.Trace(),
-		core_http_middleware.CORS("http://localhost:5173"),
+		core_http_middleware.CORS("http://77.91.115.138:5173"),
 	)
 
 	log.Debug("Initializing feature", zap.String("feature", "restaurants"))
