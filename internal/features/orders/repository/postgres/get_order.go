@@ -46,60 +46,39 @@ func (r *OrdersRepository) GetOrder(
 		return domain.OrderResponse{}, fmt.Errorf("scan order: %w", err)
 	}
 
-	items, err := r.getItems(ctx, []uuid.UUID{order.ID})
-	if err != nil {
-		return domain.OrderResponse{}, fmt.Errorf("get order items: %w", err)
-	}
-
-	order.Items = items[order.ID]
-	if order.Items == nil {
-		order.Items = []domain.OrderItem{}
-	}
-
-	return order, nil
-}
-
-func (r *OrdersRepository) getItems(
-	ctx context.Context,
-	orderIDs []uuid.UUID,
-) (map[uuid.UUID][]domain.OrderItem, error) {
-	query := `
-	SELECT order_id, id, dish_id, dish_name, quantity, price_at_order_time
+	queryItems := `
+	SELECT id, dish_id, dish_name, quantity, price_at_order_time
 	FROM order_items
-	WHERE order_id = ANY($1)
+	WHERE order_id = $1
 	ORDER BY dish_name;
 	`
 
-	rows, err := r.pool.Query(ctx, query, orderIDs)
+	rows, err := r.pool.Query(ctx, queryItems, order.ID)
 	if err != nil {
-		return nil, fmt.Errorf("query order items: %w", err)
+		return domain.OrderResponse{}, fmt.Errorf("query order items: %w", err)
 	}
 	defer rows.Close()
 
-	items := make(map[uuid.UUID][]domain.OrderItem)
+	order.Items = []domain.OrderItem{}
 
 	for rows.Next() {
-		var (
-			orderID uuid.UUID
-			item    domain.OrderItem
-		)
+		var item domain.OrderItem
 
 		if err := rows.Scan(
-			&orderID,
 			&item.ID,
 			&item.DishID,
 			&item.DishName,
 			&item.Quantity,
 			&item.PriceAtOrderTime,
 		); err != nil {
-			return nil, fmt.Errorf("scan order item: %w", err)
+			return domain.OrderResponse{}, fmt.Errorf("scan order item: %w", err)
 		}
 
-		items[orderID] = append(items[orderID], item)
+		order.Items = append(order.Items, item)
 	}
 	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("order items rows: %w", err)
+		return domain.OrderResponse{}, fmt.Errorf("order items rows: %w", err)
 	}
 
-	return items, nil
+	return order, nil
 }

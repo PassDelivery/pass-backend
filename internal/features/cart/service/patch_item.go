@@ -23,5 +23,14 @@ func (s *CartService) PatchItem(
 		return domain.Cart{}, fmt.Errorf("patch item in service: %w", err)
 	}
 
-	return s.cartWithTotal(ctx, userID)
+	cart, err := s.cartRepository.GetCart(ctx, userID)
+	if err != nil {
+		return domain.Cart{}, fmt.Errorf("get cart in service: %w", err)
+	}
+
+	for _, item := range cart.Items {
+		cart.TotalKopecks += item.TotalKopecks()
+	}
+
+	return cart, nil
 }
