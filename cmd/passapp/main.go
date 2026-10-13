@@ -35,6 +35,10 @@ import (
 	couriers_postgres_repository "github.com/PassDelivery/pass-backend/internal/features/couriers/repository/postgres"
 	couriers_service "github.com/PassDelivery/pass-backend/internal/features/couriers/service"
 	couriers_transport_http "github.com/PassDelivery/pass-backend/internal/features/couriers/transport/http"
+
+	reviews_postgres_repository "github.com/PassDelivery/pass-backend/internal/features/reviews/repository/postgres"
+	reviews_service "github.com/PassDelivery/pass-backend/internal/features/reviews/service"
+	reviews_transport_http "github.com/PassDelivery/pass-backend/internal/features/reviews/transport/http"
 )
 
 func main() {
@@ -105,6 +109,11 @@ func main() {
 	couriersService := couriers_service.NewCouriersService(couriersRepository)
 	couriersTransportHTTP := couriers_transport_http.NewCouriersHTTPHandler(couriersService, token)
 
+	log.Debug("Initializing feature", zap.String("feature", "reviews"))
+	reviewsRepository := reviews_postgres_repository.NewReviewsRepository(pool)
+	reviewsService := reviews_service.NewReviewsService(reviewsRepository)
+	reviewsTransportHTTP := reviews_transport_http.NewReviewsHTTPHandler(reviewsService, token)
+
 	apiVersionRouter := core_http_server.NewApiVersionRouter(core_http_server.ApiVersion1)
 	apiVersionRouter.RegisterRoutes(restaurantsTransportHTTP.Routes()...)
 	apiVersionRouter.RegisterRoutes(usersTransportHTTP.Routes()...)
@@ -112,6 +121,7 @@ func main() {
 	apiVersionRouter.RegisterRoutes(ordersTransportHTTP.Routes()...)
 	apiVersionRouter.RegisterRoutes(cartTransportHTTP.Routes()...)
 	apiVersionRouter.RegisterRoutes(couriersTransportHTTP.Routes()...)
+	apiVersionRouter.RegisterRoutes(reviewsTransportHTTP.Routes()...)
 	httpServer.RegisterAPIRouters(apiVersionRouter)
 
 	if err := httpServer.Run(ctx); err != nil {

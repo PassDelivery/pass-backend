@@ -108,7 +108,7 @@ func Auth(s *core_jwt.TokenService) Middleware {
 
 			if tokenStr == "" {
 				responseHandler.ErrorResponse(
-					core_errors.ErrInvalidArgument,
+					core_errors.ErrUnauthtorize,
 					"token is empty",
 				)
 				return

@@ -80,6 +80,7 @@ func (h *UsersHTTPHandler) Routes() []core_http_server.Route {
 				core_http_middleware.RequireRole(
 					domain.RoleCustomer,
 					domain.RoleRestaurantOwner,
+					domain.RoleCourier,
 				),
 			},
 		},
@@ -92,6 +93,7 @@ func (h *UsersHTTPHandler) Routes() []core_http_server.Route {
 				core_http_middleware.RequireRole(
 					domain.RoleCustomer,
 					domain.RoleRestaurantOwner,
+					domain.RoleCourier,
 				),
 			},
 		},
