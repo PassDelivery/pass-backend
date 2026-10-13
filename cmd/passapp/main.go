@@ -31,6 +31,10 @@ import (
 	cart_postgres_repository "github.com/PassDelivery/pass-backend/internal/features/cart/repository/postgres"
 	cart_service "github.com/PassDelivery/pass-backend/internal/features/cart/service"
 	cart_transport_http "github.com/PassDelivery/pass-backend/internal/features/cart/transport/http"
+
+	couriers_postgres_repository "github.com/PassDelivery/pass-backend/internal/features/couriers/repository/postgres"
+	couriers_service "github.com/PassDelivery/pass-backend/internal/features/couriers/service"
+	couriers_transport_http "github.com/PassDelivery/pass-backend/internal/features/couriers/transport/http"
 )
 
 func main() {
@@ -96,12 +100,18 @@ func main() {
 	cartService := cart_service.NewCartService(cartRepository)
 	cartTransportHTTP := cart_transport_http.NewCartHTTPTransport(cartService, token)
 
+	log.Debug("Initializing feature", zap.String("feature", "couriers"))
+	couriersRepository := couriers_postgres_repository.NewCouriersRepository(pool)
+	couriersService := couriers_service.NewCouriersService(couriersRepository)
+	couriersTransportHTTP := couriers_transport_http.NewCouriersHTTPHandler(couriersService, token)
+
 	apiVersionRouter := core_http_server.NewApiVersionRouter(core_http_server.ApiVersion1)
 	apiVersionRouter.RegisterRoutes(restaurantsTransportHTTP.Routes()...)
 	apiVersionRouter.RegisterRoutes(usersTransportHTTP.Routes()...)
 	apiVersionRouter.RegisterRoutes(menegmentTransportHTTP.Routes()...)
 	apiVersionRouter.RegisterRoutes(ordersTransportHTTP.Routes()...)
 	apiVersionRouter.RegisterRoutes(cartTransportHTTP.Routes()...)
+	apiVersionRouter.RegisterRoutes(couriersTransportHTTP.Routes()...)
 	httpServer.RegisterAPIRouters(apiVersionRouter)
 
 	if err := httpServer.Run(ctx); err != nil {
