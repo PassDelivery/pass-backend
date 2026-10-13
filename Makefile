@@ -65,3 +65,10 @@ pass-run:
 	export POSTGRES_HOST=localhost && \
 	go mod tidy && \
 	go run cmd/passapp/main.go
+
+pass-deploy:
+	@docker compose up -d --build passapp
+
+
+pass-undeploy:
+	@docker compose down passapp
