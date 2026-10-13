@@ -55,43 +55,61 @@ func NewOrdersHTTPHandler(os OrdersService, token *core_jwt.TokenService) *Order
 }
 
 func (h *OrdersHTTPHandler) Routes() []core_http_server.Route {
-	customer := []core_http_middleware.Middleware{
-		core_http_middleware.Auth(h.token),
-		core_http_middleware.RequireRole(
-			domain.RoleCustomer,
-		),
-	}
-
 	return []core_http_server.Route{
 		{
-			Method:     http.MethodGet,
-			Path:       "/orders",
-			Handler:    h.GetOrders,
-			Middleware: customer,
+			Method:  http.MethodGet,
+			Path:    "/orders",
+			Handler: h.GetOrders,
+			Middleware: []core_http_middleware.Middleware{
+				core_http_middleware.Auth(h.token),
+				core_http_middleware.RequireRole(
+					domain.RoleCustomer,
+				),
+			},
 		},
 		{
-			Method:     http.MethodPost,
-			Path:       "/orders",
-			Handler:    h.CreateOrder,
-			Middleware: customer,
+			Method:  http.MethodPost,
+			Path:    "/orders",
+			Handler: h.CreateOrder,
+			Middleware: []core_http_middleware.Middleware{
+				core_http_middleware.Auth(h.token),
+				core_http_middleware.RequireRole(
+					domain.RoleCustomer,
+				),
+			},
 		},
 		{
-			Method:     http.MethodGet,
-			Path:       "/orders/{id}",
-			Handler:    h.GetOrder,
-			Middleware: customer,
+			Method:  http.MethodGet,
+			Path:    "/orders/{id}",
+			Handler: h.GetOrder,
+			Middleware: []core_http_middleware.Middleware{
+				core_http_middleware.Auth(h.token),
+				core_http_middleware.RequireRole(
+					domain.RoleCustomer,
+				),
+			},
 		},
 		{
-			Method:     http.MethodPost,
-			Path:       "/orders/{id}/cancel",
-			Handler:    h.CancelOrder,
-			Middleware: customer,
+			Method:  http.MethodPost,
+			Path:    "/orders/{id}/cancel",
+			Handler: h.CancelOrder,
+			Middleware: []core_http_middleware.Middleware{
+				core_http_middleware.Auth(h.token),
+				core_http_middleware.RequireRole(
+					domain.RoleCustomer,
+				),
+			},
 		},
 		{
-			Method:     http.MethodGet,
-			Path:       "/orders/{id}/status-history",
-			Handler:    h.GetStatusHistory,
-			Middleware: customer,
+			Method:  http.MethodGet,
+			Path:    "/orders/{id}/status-history",
+			Handler: h.GetStatusHistory,
+			Middleware: []core_http_middleware.Middleware{
+				core_http_middleware.Auth(h.token),
+				core_http_middleware.RequireRole(
+					domain.RoleCustomer,
+				),
+			},
 		},
 		{
 			Method:  http.MethodGet,

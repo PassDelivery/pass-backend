@@ -19,14 +19,6 @@ func (s *OrdersService) GetOrder(
 		return domain.OrderResponse{}, fmt.Errorf("get id from context: %w", err)
 	}
 
-	return s.userOrder(ctx, orderID, userID)
-}
-
-func (s *OrdersService) userOrder(
-	ctx context.Context,
-	orderID uuid.UUID,
-	userID uuid.UUID,
-) (domain.OrderResponse, error) {
 	order, err := s.ordersRepository.GetOrder(ctx, orderID)
 	if err != nil {
 		return domain.OrderResponse{}, fmt.Errorf("get order in service: %w", err)

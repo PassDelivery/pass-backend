@@ -19,9 +19,13 @@ func (s *OrdersService) CancelOrder(
 		return domain.OrderResponse{}, fmt.Errorf("get id from context: %w", err)
 	}
 
-	order, err := s.userOrder(ctx, orderID, userID)
+	order, err := s.ordersRepository.GetOrder(ctx, orderID)
 	if err != nil {
-		return domain.OrderResponse{}, err
+		return domain.OrderResponse{}, fmt.Errorf("get order: %w", err)
+	}
+
+	if order.UserID != userID {
+		return domain.OrderResponse{}, fmt.Errorf("order not found: %w", core_errors.ErrNotFound)
 	}
 
 	if !order.Status.CanCustomerCancel() {

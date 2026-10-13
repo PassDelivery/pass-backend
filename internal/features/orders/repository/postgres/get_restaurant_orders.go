@@ -8,30 +8,6 @@ import (
 	"github.com/google/uuid"
 )
 
-func (r *OrdersRepository) IsRestaurantOwner(
-	ctx context.Context,
-	restID uuid.UUID,
-	ownerID uuid.UUID,
-) (bool, error) {
-	ctx, cancel := context.WithTimeout(ctx, r.pool.OpTimeout())
-	defer cancel()
-
-	query := `
-	SELECT EXISTS(
-		SELECT 1 FROM restaurants
-		WHERE id = $1 AND owner_id = $2
-	);
-	`
-
-	var ok bool
-
-	if err := r.pool.QueryRow(ctx, query, restID, ownerID).Scan(&ok); err != nil {
-		return false, fmt.Errorf("failed scan: %w", err)
-	}
-
-	return ok, nil
-}
-
 func (r *OrdersRepository) GetRestaurantOrders(
 	ctx context.Context,
 	restID uuid.UUID,
@@ -89,9 +65,42 @@ func (r *OrdersRepository) GetRestaurantOrders(
 		return orders, nil
 	}
 
-	items, err := r.getItems(ctx, ids)
+	queryItems := `
+	SELECT order_id, id, dish_id, dish_name, quantity, price_at_order_time
+	FROM order_items
+	WHERE order_id = ANY($1)
+	ORDER BY dish_name;
+	`
+
+	itemRows, err := r.pool.Query(ctx, queryItems, ids)
 	if err != nil {
-		return nil, fmt.Errorf("get orders items: %w", err)
+		return nil, fmt.Errorf("query order items: %w", err)
+	}
+	defer itemRows.Close()
+
+	items := make(map[uuid.UUID][]domain.OrderItem)
+
+	for itemRows.Next() {
+		var (
+			orderID uuid.UUID
+			item    domain.OrderItem
+		)
+
+		if err := itemRows.Scan(
+			&orderID,
+			&item.ID,
+			&item.DishID,
+			&item.DishName,
+			&item.Quantity,
+			&item.PriceAtOrderTime,
+		); err != nil {
+			return nil, fmt.Errorf("scan order item: %w", err)
+		}
+
+		items[orderID] = append(items[orderID], item)
+	}
+	if err := itemRows.Err(); err != nil {
+		return nil, fmt.Errorf("order items rows: %w", err)
 	}
 
 	for k := range orders {
