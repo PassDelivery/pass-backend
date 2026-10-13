@@ -63,7 +63,7 @@ func (s *TokenService) VerifyToken(token string) (*Claims, error) {
 
 	jwtToken, err := jwt.ParseWithClaims(token, claims, keyFunc)
 	if err != nil {
-		return nil, fmt.Errorf("parse token: %w", err)
+		return nil, fmt.Errorf("parse token: %v: %w", err, core_errors.ErrUnauthtorize)
 	}
 
 	claims, ok := jwtToken.Claims.(*Claims)
@@ -97,7 +97,7 @@ func CheckPassword(pass, hash string) bool {
 func GetIDFromContext(ctx context.Context) (uuid.UUID, error) {
 	claims, ok := FromContext(ctx)
 	if !ok {
-		return uuid.Nil, fmt.Errorf("jwt from context", core_errors.ErrUnauthtorize)
+		return uuid.Nil, fmt.Errorf("jwt from context: %w", core_errors.ErrUnauthtorize)
 	}
 
 	return claims.UserID, nil
