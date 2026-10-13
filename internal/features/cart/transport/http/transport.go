@@ -46,43 +46,61 @@ func NewCartHTTPTransport(cs CartService, token *core_jwt.TokenService) *CartHTT
 }
 
 func (h *CartHTTPTransport) Routes() []core_http_server.Route {
-	middleware := []core_http_middleware.Middleware{
-		core_http_middleware.Auth(h.token),
-		core_http_middleware.RequireRole(
-			domain.RoleCustomer,
-		),
-	}
-
 	return []core_http_server.Route{
 		{
-			Method:     http.MethodGet,
-			Path:       "/cart",
-			Handler:    h.GetCart,
-			Middleware: middleware,
+			Method:  http.MethodGet,
+			Path:    "/cart",
+			Handler: h.GetCart,
+			Middleware: []core_http_middleware.Middleware{
+				core_http_middleware.Auth(h.token),
+				core_http_middleware.RequireRole(
+					domain.RoleCustomer,
+				),
+			},
 		},
 		{
-			Method:     http.MethodDelete,
-			Path:       "/cart",
-			Handler:    h.ClearCart,
-			Middleware: middleware,
+			Method:  http.MethodDelete,
+			Path:    "/cart",
+			Handler: h.ClearCart,
+			Middleware: []core_http_middleware.Middleware{
+				core_http_middleware.Auth(h.token),
+				core_http_middleware.RequireRole(
+					domain.RoleCustomer,
+				),
+			},
 		},
 		{
-			Method:     http.MethodPost,
-			Path:       "/cart/items",
-			Handler:    h.AddItem,
-			Middleware: middleware,
+			Method:  http.MethodPost,
+			Path:    "/cart/items",
+			Handler: h.AddItem,
+			Middleware: []core_http_middleware.Middleware{
+				core_http_middleware.Auth(h.token),
+				core_http_middleware.RequireRole(
+					domain.RoleCustomer,
+				),
+			},
 		},
 		{
-			Method:     http.MethodPatch,
-			Path:       "/cart/items/{id}",
-			Handler:    h.PatchItem,
-			Middleware: middleware,
+			Method:  http.MethodPatch,
+			Path:    "/cart/items/{id}",
+			Handler: h.PatchItem,
+			Middleware: []core_http_middleware.Middleware{
+				core_http_middleware.Auth(h.token),
+				core_http_middleware.RequireRole(
+					domain.RoleCustomer,
+				),
+			},
 		},
 		{
-			Method:     http.MethodDelete,
-			Path:       "/cart/items/{id}",
-			Handler:    h.DeleteItem,
-			Middleware: middleware,
+			Method:  http.MethodDelete,
+			Path:    "/cart/items/{id}",
+			Handler: h.DeleteItem,
+			Middleware: []core_http_middleware.Middleware{
+				core_http_middleware.Auth(h.token),
+				core_http_middleware.RequireRole(
+					domain.RoleCustomer,
+				),
+			},
 		},
 	}
 }
