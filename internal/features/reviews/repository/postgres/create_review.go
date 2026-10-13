@@ -23,11 +23,11 @@ func (r *ReviewsRepository) CreateReview(
 
 	query := `
 	WITH rv AS (
-		INSERT INTO reviews (order_id, user_id, restaurant_id, rating, body)
-		VALUES ($1, $2, $3, $4, $5)
-		RETURNING id, order_id, user_id, restaurant_id, rating, body, created_at
+		INSERT INTO reviews (order_id, user_id, restaurant_id, rating, courier_rating, body)
+		VALUES ($1, $2, $3, $4, $5, $6)
+		RETURNING id, order_id, user_id, restaurant_id, rating, courier_rating, body, created_at
 	)
-	SELECT rv.id, rv.order_id, rv.restaurant_id, split_part(u.name, ' ', 1), rv.rating, rv.body, rv.created_at
+	SELECT rv.id, rv.order_id, rv.restaurant_id, split_part(u.name, ' ', 1), rv.rating, rv.courier_rating, rv.body, rv.created_at
 	FROM rv
 	JOIN users u ON u.id = rv.user_id;
 	`
@@ -41,6 +41,7 @@ func (r *ReviewsRepository) CreateReview(
 		userID,
 		restID,
 		review.Rating,
+		review.CourierRating,
 		review.Body,
 	).Scan(
 		&reviewResp.ID,
@@ -48,6 +49,7 @@ func (r *ReviewsRepository) CreateReview(
 		&reviewResp.RestID,
 		&reviewResp.AuthorName,
 		&reviewResp.Rating,
+		&reviewResp.CourierRating,
 		&reviewResp.Body,
 		&reviewResp.CreatedAt,
 	)

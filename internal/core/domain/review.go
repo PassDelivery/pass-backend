@@ -7,18 +7,20 @@ import (
 )
 
 type ReviewRequest struct {
-	Rating int
-	Body   *string
+	Rating        int
+	CourierRating *int
+	Body          *string
 }
 
 type ReviewResponse struct {
-	ID         uuid.UUID
-	OrderID    uuid.UUID
-	RestID     uuid.UUID
-	AuthorName string
-	Rating     int
-	Body       *string
-	CreatedAt  time.Time
+	ID            uuid.UUID
+	OrderID       uuid.UUID
+	RestID        uuid.UUID
+	AuthorName    string
+	Rating        int
+	CourierRating *int
+	Body          *string
+	CreatedAt     time.Time
 }
 
 type ReviewOrder struct {

@@ -1,0 +1,1 @@
+ALTER TABLE reviews ADD COLUMN IF NOT EXISTS courier_rating INTEGER CHECK(courier_rating BETWEEN 1 AND 5);

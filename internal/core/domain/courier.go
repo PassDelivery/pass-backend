@@ -46,6 +46,20 @@ func (s DeliveryStatus) OrderStatus() OrderStatus {
 	return deliveryOrderStatus[s]
 }
 
+const (
+	courierBaseKopecks = 15000
+	courierPercent     = 10
+)
+
+func CourierPayout(totalKopecks int64) int64 {
+	return (courierBaseKopecks + totalKopecks*courierPercent/100) / 100 * 100
+}
+
+type CourierRating struct {
+	Rating *float64
+	Count  int
+}
+
 type Courier struct {
 	ID            uuid.UUID
 	UserID        uuid.UUID

@@ -30,6 +30,15 @@ type CouriersRepository interface {
 		ctx context.Context,
 		courierID uuid.UUID,
 	) ([]domain.Delivery, error)
+	GetHistory(
+		ctx context.Context,
+		courierID uuid.UUID,
+		limit int,
+	) ([]domain.Delivery, error)
+	GetRating(
+		ctx context.Context,
+		courierID uuid.UUID,
+	) (domain.CourierRating, error)
 	GetDelivery(
 		ctx context.Context,
 		courierID uuid.UUID,

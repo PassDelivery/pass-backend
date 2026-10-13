@@ -27,6 +27,12 @@ type CouriersService interface {
 	GetDeliveries(
 		ctx context.Context,
 	) ([]domain.Delivery, error)
+	GetHistory(
+		ctx context.Context,
+	) ([]domain.Delivery, error)
+	GetRating(
+		ctx context.Context,
+	) (domain.CourierRating, error)
 	AcceptDelivery(
 		ctx context.Context,
 		deliveryID uuid.UUID,
@@ -77,6 +83,28 @@ func (h *CouriersHTTPHandler) Routes() []core_http_server.Route {
 			Method:  http.MethodGet,
 			Path:    "/courier/deliveries",
 			Handler: h.GetDeliveries,
+			Middleware: []core_http_middleware.Middleware{
+				core_http_middleware.Auth(h.token),
+				core_http_middleware.RequireRole(
+					domain.RoleCourier,
+				),
+			},
+		},
+		{
+			Method:  http.MethodGet,
+			Path:    "/courier/deliveries/history",
+			Handler: h.GetHistory,
+			Middleware: []core_http_middleware.Middleware{
+				core_http_middleware.Auth(h.token),
+				core_http_middleware.RequireRole(
+					domain.RoleCourier,
+				),
+			},
+		},
+		{
+			Method:  http.MethodGet,
+			Path:    "/courier/rating",
+			Handler: h.GetRating,
 			Middleware: []core_http_middleware.Middleware{
 				core_http_middleware.Auth(h.token),
 				core_http_middleware.RequireRole(
