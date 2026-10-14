@@ -57,13 +57,26 @@ type DeliveryResponseDTO struct {
 	CustomerName    string            `json:"customer_name,omitempty"`
 	CustomerPhone   *string           `json:"customer_phone,omitempty"`
 	TotalKopecks    int64             `json:"total_kopecks"`
+	PayoutKopecks   int64             `json:"payout_kopecks"`
 	Items           []DeliveryItemDTO `json:"items"`
+}
+
+type CourierRatingResponseDTO struct {
+	Rating *float64 `json:"rating"`
+	Count  int      `json:"count"`
 }
 
 func courierToDTO(courier domain.Courier) CourierResponseDTO {
 	return CourierResponseDTO{
 		Status:        string(courier.Status),
 		TransportType: courier.TransportType,
+	}
+}
+
+func ratingToDTO(rating domain.CourierRating) CourierRatingResponseDTO {
+	return CourierRatingResponseDTO{
+		Rating: rating.Rating,
+		Count:  rating.Count,
 	}
 }
 
@@ -91,6 +104,7 @@ func deliveryToDTO(d domain.Delivery) DeliveryResponseDTO {
 		CustomerName:    d.CustomerName,
 		CustomerPhone:   d.CustomerPhone,
 		TotalKopecks:    d.TotalKopecks,
+		PayoutKopecks:   domain.CourierPayout(d.TotalKopecks),
 		Items:           items,
 	}
 }
