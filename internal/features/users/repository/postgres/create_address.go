@@ -34,15 +34,17 @@ func (r *UsersRepository) CreateAddress(
 
 	queryPost := `
 	INSERT INTO addresses (user_id, city, street, house, apartment, comment, is_default)
-	VALUES ($1, $2, $3, $4, $5, $6, $7)
+	VALUES ($1, $2, $3, $4, $5, $6, $7 OR NOT EXISTS (SELECT 1 FROM addresses WHERE user_id = $1))
 	RETURNING id, user_id, city, street, house, apartment, comment, is_default, created_at;
 	`
 
 	var response AddressesResponseModel
 
-	_, err = tx.Exec(ctx, queryPatch, id)
-	if err != nil {
-		return domain.AddressesResponse{}, fmt.Errorf("exec to database: %w", err)
+	if address.IsDefault {
+		_, err = tx.Exec(ctx, queryPatch, id)
+		if err != nil {
+			return domain.AddressesResponse{}, fmt.Errorf("exec to database: %w", err)
+		}
 	}
 
 	if err := tx.QueryRow(
@@ -54,7 +56,7 @@ func (r *UsersRepository) CreateAddress(
 		address.House,
 		address.Apartment,
 		address.Comment,
-		true,
+		address.IsDefault,
 	).Scan(
 		&response.ID,
 		&response.UserID,
