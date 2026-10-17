@@ -77,7 +77,7 @@ type AddressRequestDTO struct {
 	House     string  `json:"house" validate:"required,min=1"`
 	Apartment *string `json:"apartment" validate:"omitempty,min=1"`
 	Comment   *string `json:"comment" validate:"omitempty,min=1,max=50"`
-	IsDefault bool    `json:"is_default" validate:"required"`
+	IsDefault bool    `json:"is_default"`
 }
 
 func addressRequestDomainFromDTO(req AddressRequestDTO) domain.AddressRequest {
