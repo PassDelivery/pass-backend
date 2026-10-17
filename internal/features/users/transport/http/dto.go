@@ -55,6 +55,7 @@ type GetUserResponseDTO struct {
 	Name      string    `json:"name"`
 	Phone     *string   `json:"phone"`
 	Role      string    `json:"role"`
+	AvatarURL *string   `json:"avatar_url"`
 	CreatedAt time.Time `json:"created_at"`
 }
 

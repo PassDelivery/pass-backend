@@ -23,7 +23,7 @@ func (r *UsersRepository) PatchUser(
 	UPDATE users
 	SET email=$1, name=$2, phone=$3
 	WHERE id=$4
-	RETURNING id, email, name, phone, role, created_at;
+	RETURNING id, email, name, phone, role, avatar_url, created_at;
 	`
 
 	var response domain.GetUserResponse
@@ -39,6 +39,7 @@ func (r *UsersRepository) PatchUser(
 			&response.Name,
 			&response.Phone,
 			&response.Role,
+			&response.AvatarURL,
 			&response.CreatedAt,
 		); err != nil {
 			return domain.GetUserResponse{}, fmt.Errorf("failed to scan: %w", err)

@@ -34,6 +34,10 @@ type UsersService interface {
 		id uuid.UUID,
 		user domain.UserPatch,
 	) (domain.GetUserResponse, error)
+	UploadAvatar(
+		ctx context.Context,
+		data []byte,
+	) (domain.GetUserResponse, error)
 	GetAddresses(
 		ctx context.Context,
 	) ([]domain.AddressesResponse, error)
@@ -88,6 +92,19 @@ func (h *UsersHTTPHandler) Routes() []core_http_server.Route {
 			Method: http.MethodPatch,
 			Path: "/users/me",
 			Handler: h.PatchUser,
+			Middleware: []core_http_middleware.Middleware{
+				core_http_middleware.Auth(h.token),
+				core_http_middleware.RequireRole(
+					domain.RoleCustomer,
+					domain.RoleRestaurantOwner,
+					domain.RoleCourier,
+				),
+			},
+		},
+		{
+			Method: http.MethodPost,
+			Path: "/users/me/avatar",
+			Handler: h.UploadAvatar,
 			Middleware: []core_http_middleware.Middleware{
 				core_http_middleware.Auth(h.token),
 				core_http_middleware.RequireRole(

@@ -28,6 +28,7 @@ func (h *UsersHTTPHandler) GetUser(w http.ResponseWriter, r *http.Request) {
 		Name: user.Name,
 		Phone: user.Phone,
 		Role: string(user.Role),
+		AvatarURL: user.AvatarURL,
 		CreatedAt: user.CreatedAt,
 	}
 
