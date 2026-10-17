@@ -35,6 +35,11 @@ type UsersRepository interface {
 		id uuid.UUID,
 		user domain.GetUserResponse,
 	) (domain.GetUserResponse, error)
+	SetAvatar(
+		ctx context.Context,
+		userID uuid.UUID,
+		avatarURL string,
+	) (domain.GetUserResponse, *string, error)
 	GetAddresses(
 		ctx context.Context,
 		id uuid.UUID,

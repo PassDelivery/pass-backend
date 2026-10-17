@@ -45,6 +45,7 @@ func (s *UsersHTTPHandler) PatchUser(w http.ResponseWriter, r *http.Request) {
 		Name: userResponse.Name,
 		Phone: userResponse.Phone,
 		Role: string(userResponse.Role),
+		AvatarURL: userResponse.AvatarURL,
 		CreatedAt: userResponse.CreatedAt,
 	}
 

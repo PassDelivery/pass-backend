@@ -58,6 +58,7 @@ type GetUserResponse struct {
 	Name      string
 	Phone     *string
 	Role      Role
+	AvatarURL *string
 	CreatedAt time.Time
 }
 

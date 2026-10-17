@@ -17,6 +17,7 @@ const MaxPhotoSize = 5 << 20
 const (
 	PhotoKindRestaurants = "restaurants"
 	PhotoKindDishes      = "dishes"
+	PhotoKindAvatars     = "avatars"
 )
 
 var photoExtensions = map[string]string{
@@ -35,7 +36,7 @@ func uploadsDir() string {
 }
 
 func isPhotoKind(kind string) bool {
-	return kind == PhotoKindRestaurants || kind == PhotoKindDishes
+	return kind == PhotoKindRestaurants || kind == PhotoKindDishes || kind == PhotoKindAvatars
 }
 
 func SavePhoto(kind string, data []byte) (string, error) {
