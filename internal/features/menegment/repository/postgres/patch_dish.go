@@ -20,7 +20,7 @@ func (r *MenegmentRepository) PatchDish(
 	UPDATE dishes
 	SET category_id=$1, name=$2, description=$3, price_kopecks=$4, cooking_time_minutes=$5, is_available=$6
 	WHERE id=$7
-	RETURNING id, restaurant_id, category_id, name, description, price_kopecks, cooking_time_minutes, is_available, created_at;
+	RETURNING id, restaurant_id, category_id, name, description, price_kopecks, cooking_time_minutes, is_available, photo_url, created_at;
 	`
 
 	var dishResp domain.DishResponse
@@ -44,6 +44,7 @@ func (r *MenegmentRepository) PatchDish(
 		&dishResp.PriceKopecks,
 		&dishResp.CookingTimeMinutes,
 		&dishResp.IsAvailable,
+		&dishResp.PhotoURL,
 		&dishResp.CreatedAt,
 	); err != nil {
 		return domain.DishResponse{}, fmt.Errorf("failed scan: %w", err)

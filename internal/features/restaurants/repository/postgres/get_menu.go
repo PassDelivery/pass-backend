@@ -58,7 +58,7 @@ func (r *RestaurantsRepository) GetAvailableDishes(
 	defer cancel()
 
 	query := `
-	SELECT id, category_id, name, description, price_kopecks, cooking_time_minutes
+	SELECT id, category_id, name, description, price_kopecks, cooking_time_minutes, photo_url
 	FROM dishes
 	WHERE restaurant_id = $1 AND is_available = true
 	ORDER BY created_at;
@@ -82,6 +82,7 @@ func (r *RestaurantsRepository) GetAvailableDishes(
 			&dish.Description,
 			&dish.PriceKopecks,
 			&dish.CookingTimeMinutes,
+			&dish.PhotoURL,
 		); err != nil {
 			return nil, fmt.Errorf("scan dish: %w", err)
 		}

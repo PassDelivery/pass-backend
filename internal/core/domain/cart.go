@@ -14,6 +14,7 @@ type CartItem struct {
 	PriceKopecks int64
 	Quantity     int
 	IsAvailable  bool
+	PhotoURL     *string
 }
 
 type Cart struct {

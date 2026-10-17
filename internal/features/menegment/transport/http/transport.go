@@ -56,6 +56,16 @@ type MenegmentService interface {
 		ctx context.Context,
 		dishID uuid.UUID,
 	) error
+	UploadRestaurantPhoto(
+		ctx context.Context,
+		restID uuid.UUID,
+		data []byte,
+	) (domain.RestaurantResponse, error)
+	UploadDishPhoto(
+		ctx context.Context,
+		dishID uuid.UUID,
+		data []byte,
+	) (domain.DishResponse, error)
 }
 
 func NewMenegmentHTTPHandler(ms MenegmentService, token *core_jwt.TokenService) *MenegmentHTTPHandler {
@@ -159,6 +169,28 @@ func (h *MenegmentHTTPHandler) Routes() []core_http_server.Route {
 			Method:  http.MethodDelete,
 			Path:    "/internal/dishes/{id}",
 			Handler: h.HideDish,
+			Middleware: []core_http_middleware.Middleware{
+				core_http_middleware.Auth(h.token),
+				core_http_middleware.RequireRole(
+					domain.RoleRestaurantOwner,
+				),
+			},
+		},
+		{
+			Method:  http.MethodPost,
+			Path:    "/internal/restaurants/{id}/photo",
+			Handler: h.UploadRestaurantPhoto,
+			Middleware: []core_http_middleware.Middleware{
+				core_http_middleware.Auth(h.token),
+				core_http_middleware.RequireRole(
+					domain.RoleRestaurantOwner,
+				),
+			},
+		},
+		{
+			Method:  http.MethodPost,
+			Path:    "/internal/dishes/{id}/photo",
+			Handler: h.UploadDishPhoto,
 			Middleware: []core_http_middleware.Middleware{
 				core_http_middleware.Auth(h.token),
 				core_http_middleware.RequireRole(

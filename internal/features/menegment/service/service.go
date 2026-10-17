@@ -76,6 +76,16 @@ type MenegmentRepository interface {
 		ctx context.Context,
 		dishID uuid.UUID,
 	) error
+	SetRestaurantPhoto(
+		ctx context.Context,
+		restID uuid.UUID,
+		photoURL string,
+	) (domain.RestaurantResponse, *string, error)
+	SetDishPhoto(
+		ctx context.Context,
+		dishID uuid.UUID,
+		photoURL string,
+	) (domain.DishResponse, error)
 }
 
 func NewMenegmentService(mr MenegmentRepository) *MenegmentService {

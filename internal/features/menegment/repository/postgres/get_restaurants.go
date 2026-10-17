@@ -16,7 +16,7 @@ func (r *MenegmentRepository) GetRestaurants(
 	defer cancel()
 
 	query := `
-	SELECT name, description, address, phone, is_open, id, owner_id, created_at
+	SELECT name, description, address, phone, is_open, photo_url, id, owner_id, created_at
 	FROM restaurants
 	WHERE owner_id = $1
 	ORDER BY created_at;
@@ -39,6 +39,7 @@ func (r *MenegmentRepository) GetRestaurants(
 			&restaurant.Address,
 			&restaurant.Phone,
 			&restaurant.IsOpen,
+			&restaurant.PhotoURL,
 			&restaurant.ID,
 			&restaurant.OwnerID,
 			&restaurant.CreatedAt,

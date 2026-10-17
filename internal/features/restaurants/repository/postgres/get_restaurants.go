@@ -14,7 +14,7 @@ func (r *RestaurantsRepository) GetOpenRestaurants(
 	defer cancel()
 
 	query := `
-	SELECT id, name, description, address, phone, is_open, created_at
+	SELECT id, name, description, address, phone, is_open, photo_url, created_at
 	FROM restaurants
 	WHERE is_open = true
 	ORDER BY created_at DESC;
@@ -38,6 +38,7 @@ func (r *RestaurantsRepository) GetOpenRestaurants(
 			&rest.Address,
 			&rest.Phone,
 			&rest.IsOpen,
+			&rest.PhotoURL,
 			&rest.CreatedAt,
 		); err != nil {
 			return nil, fmt.Errorf("scan restaurant: %w", err)

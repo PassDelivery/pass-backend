@@ -50,6 +50,7 @@ func DTOFromDomain(restaurant domain.RestaurantResponse) RestaurantResponseDTO {
 		Address:     restaurant.Address,
 		Phone:       restaurant.Phone,
 		IsOpen:      restaurant.IsOpen,
+		PhotoURL:    restaurant.PhotoURL,
 		ID:          restaurant.ID,
 		OwnerID:     restaurant.OwnerID,
 		CreatedAt:   restaurant.CreatedAt,

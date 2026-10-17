@@ -14,6 +14,7 @@ type RestaurantResponseDTO struct {
 	Address     string    `json:"address"`
 	Phone       *string   `json:"phone"`
 	IsOpen      bool      `json:"is_open"`
+	PhotoURL    *string   `json:"photo_url"`
 	CreatedAt   time.Time `json:"created_at"`
 }
 
@@ -24,6 +25,7 @@ type MenuDishDTO struct {
 	Description        *string   `json:"description"`
 	PriceKopecks       int64     `json:"price_kopecks"`
 	CookingTimeMinutes *int      `json:"cooking_time_minutes"`
+	PhotoURL           *string   `json:"photo_url"`
 }
 
 type MenuCategoryDTO struct {
@@ -46,6 +48,7 @@ func restaurantToDTO(rest domain.RestaurantCard) RestaurantResponseDTO {
 		Address:     rest.Address,
 		Phone:       rest.Phone,
 		IsOpen:      rest.IsOpen,
+		PhotoURL:    rest.PhotoURL,
 		CreatedAt:   rest.CreatedAt,
 	}
 }
@@ -71,6 +74,7 @@ func menuToDTO(menu domain.Menu) MenuResponseDTO {
 				Description:        dish.Description,
 				PriceKopecks:       dish.PriceKopecks,
 				CookingTimeMinutes: dish.CookingTimeMinutes,
+				PhotoURL:           dish.PhotoURL,
 			}
 		}
 
