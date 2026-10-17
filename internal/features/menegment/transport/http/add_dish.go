@@ -74,6 +74,7 @@ func dishToDTO(dish domain.DishResponse) DishResponseDTO {
 		PriceKopecks:       dish.PriceKopecks,
 		CookingTimeMinutes: dish.CookingTimeMinutes,
 		IsAvailable:        dish.IsAvailable,
+		PhotoURL:           dish.PhotoURL,
 		CreatedAt:          dish.CreatedAt,
 	}
 }

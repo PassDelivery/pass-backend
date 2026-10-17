@@ -13,6 +13,7 @@ type RestaurantCard struct {
 	Address     string
 	Phone       *string
 	IsOpen      bool
+	PhotoURL    *string
 	CreatedAt   time.Time
 }
 
@@ -23,6 +24,7 @@ type MenuDish struct {
 	Description        *string
 	PriceKopecks       int64
 	CookingTimeMinutes *int
+	PhotoURL           *string
 }
 
 type MenuCategory struct {

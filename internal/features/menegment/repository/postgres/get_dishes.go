@@ -16,7 +16,7 @@ func (r *MenegmentRepository) GetDishes(
 	defer cancel()
 
 	query := `
-	SELECT id, restaurant_id, category_id, name, description, price_kopecks, cooking_time_minutes, is_available, created_at
+	SELECT id, restaurant_id, category_id, name, description, price_kopecks, cooking_time_minutes, is_available, photo_url, created_at
 	FROM dishes
 	WHERE restaurant_id = $1
 	ORDER BY created_at;
@@ -42,6 +42,7 @@ func (r *MenegmentRepository) GetDishes(
 			&dish.PriceKopecks,
 			&dish.CookingTimeMinutes,
 			&dish.IsAvailable,
+			&dish.PhotoURL,
 			&dish.CreatedAt,
 		); err != nil {
 			return nil, fmt.Errorf("scan dish: %w", err)

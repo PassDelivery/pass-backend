@@ -23,6 +23,7 @@ type RestaurantResponseDTO struct {
 	Address     string    `json:"address"`
 	Phone       *string   `json:"phone"`
 	IsOpen      bool      `json:"is_open"`
+	PhotoURL    *string   `json:"photo_url"`
 	ID          uuid.UUID `json:"id"`
 	OwnerID     uuid.UUID `json:"owner_id"`
 	CreatedAt   time.Time `json:"created_at"`
@@ -109,6 +110,7 @@ type DishResponseDTO struct {
 	PriceKopecks       int64     `json:"price_kopecks"`
 	CookingTimeMinutes *int      `json:"cooking_time_minutes"`
 	IsAvailable        bool      `json:"is_available"`
+	PhotoURL           *string   `json:"photo_url"`
 	CreatedAt          time.Time `json:"created_at"`
 }
 

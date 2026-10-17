@@ -19,7 +19,7 @@ func (r *MenegmentRepository) GetDish(
 	defer cancel()
 
 	query := `
-	SELECT id, restaurant_id, category_id, name, description, price_kopecks, cooking_time_minutes, is_available, created_at
+	SELECT id, restaurant_id, category_id, name, description, price_kopecks, cooking_time_minutes, is_available, photo_url, created_at
 	FROM dishes
 	WHERE id = $1;
 	`
@@ -35,6 +35,7 @@ func (r *MenegmentRepository) GetDish(
 		&dish.PriceKopecks,
 		&dish.CookingTimeMinutes,
 		&dish.IsAvailable,
+		&dish.PhotoURL,
 		&dish.CreatedAt,
 	)
 	if errors.Is(err, pgx.ErrNoRows) {

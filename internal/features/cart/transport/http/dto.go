@@ -44,6 +44,7 @@ type CartItemResponseDTO struct {
 	Quantity     int       `json:"quantity"`
 	TotalKopecks int64     `json:"total_kopecks"`
 	IsAvailable  bool      `json:"is_available"`
+	PhotoURL     *string   `json:"photo_url"`
 }
 
 type CartResponseDTO struct {
@@ -71,6 +72,7 @@ func cartToDTO(cart domain.Cart) CartResponseDTO {
 			Quantity:     v.Quantity,
 			TotalKopecks: v.TotalKopecks(),
 			IsAvailable:  v.IsAvailable,
+			PhotoURL:     v.PhotoURL,
 		}
 	}
 

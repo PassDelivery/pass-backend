@@ -19,7 +19,7 @@ func (r *RestaurantsRepository) GetRestaurant(
 	defer cancel()
 
 	query := `
-	SELECT id, name, description, address, phone, is_open, created_at
+	SELECT id, name, description, address, phone, is_open, photo_url, created_at
 	FROM restaurants
 	WHERE id = $1;
 	`
@@ -33,6 +33,7 @@ func (r *RestaurantsRepository) GetRestaurant(
 		&rest.Address,
 		&rest.Phone,
 		&rest.IsOpen,
+		&rest.PhotoURL,
 		&rest.CreatedAt,
 	)
 	if errors.Is(err, pgx.ErrNoRows) {

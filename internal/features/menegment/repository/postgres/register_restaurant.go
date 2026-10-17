@@ -19,7 +19,7 @@ func (r *MenegmentRepository) RegisterRestaurant(
 	query := `
 	INSERT INTO restaurants (name, description, address, phone, is_open, owner_id)
 	VALUES ($1, $2, $3, $4, $5, $6)
-	RETURNING name, description, address, phone, is_open, id, owner_id, created_at;
+	RETURNING name, description, address, phone, is_open, photo_url, id, owner_id, created_at;
 	`
 
 	var restResp domain.RestaurantResponse
@@ -39,6 +39,7 @@ func (r *MenegmentRepository) RegisterRestaurant(
 		&restResp.Address,
 		&restResp.Phone,
 		&restResp.IsOpen,
+		&restResp.PhotoURL,
 		&restResp.ID,
 		&restResp.OwnerID,
 		&restResp.CreatedAt,

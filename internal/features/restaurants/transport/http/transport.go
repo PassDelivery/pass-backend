@@ -50,5 +50,10 @@ func (h *RestaurantsHTTPHandler) Routes() []core_http_server.Route {
 			Path:    "/restaurants/{id}/menu",
 			Handler: h.GetMenu,
 		},
+		{
+			Method:  http.MethodGet,
+			Path:    "/uploads/{kind}/{name}",
+			Handler: h.GetPhoto,
+		},
 	}
 }

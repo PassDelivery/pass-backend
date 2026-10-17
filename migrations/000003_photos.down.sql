@@ -1,0 +1,2 @@
+ALTER TABLE dishes DROP COLUMN IF EXISTS photo_url;
+ALTER TABLE restaurants DROP COLUMN IF EXISTS photo_url;

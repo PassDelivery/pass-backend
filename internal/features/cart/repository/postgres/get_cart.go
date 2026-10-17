@@ -25,7 +25,7 @@ func (r *CartRepository) GetCart(
 	`
 
 	queryItems := `
-	SELECT ci.id, ci.dish_id, d.name, d.price_kopecks, ci.quantity, d.is_available
+	SELECT ci.id, ci.dish_id, d.name, d.price_kopecks, ci.quantity, d.is_available, d.photo_url
 	FROM cart_items ci
 	JOIN dishes d ON d.id = ci.dish_id
 	WHERE ci.cart_id = $1
@@ -66,6 +66,7 @@ func (r *CartRepository) GetCart(
 			&item.PriceKopecks,
 			&item.Quantity,
 			&item.IsAvailable,
+			&item.PhotoURL,
 		); err != nil {
 			return domain.Cart{}, fmt.Errorf("scan cart item: %w", err)
 		}

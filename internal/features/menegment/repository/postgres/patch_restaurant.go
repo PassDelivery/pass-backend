@@ -21,7 +21,7 @@ func (r *MenegmentRepository) PatchRestaurant(
 	UPDATE restaurants
 	SET name=$1, description=$2, address=$3, phone=$4, is_open=$5
 	WHERE owner_id=$6 AND id=$7
-	RETURNING name, description, address, phone, is_open, id, owner_id, created_at;
+	RETURNING name, description, address, phone, is_open, photo_url, id, owner_id, created_at;
 	`
 
 	var restResp domain.RestaurantResponse
@@ -42,6 +42,7 @@ func (r *MenegmentRepository) PatchRestaurant(
 		&restResp.Address,
 		&restResp.Phone,
 		&restResp.IsOpen,
+		&restResp.PhotoURL,
 		&restResp.ID,
 		&restResp.OwnerID,
 		&restResp.CreatedAt,

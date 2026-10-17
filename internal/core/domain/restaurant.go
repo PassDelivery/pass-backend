@@ -22,6 +22,7 @@ type RestaurantResponse struct {
 	Address     string
 	Phone       *string
 	IsOpen      bool
+	PhotoURL    *string
 	ID          uuid.UUID
 	OwnerID     uuid.UUID
 	CreatedAt   time.Time
@@ -65,6 +66,7 @@ type DishResponse struct {
 	PriceKopecks       int64
 	CookingTimeMinutes *int
 	IsAvailable        bool
+	PhotoURL           *string
 	CreatedAt          time.Time
 }
 
