@@ -14,7 +14,7 @@ type RegisterRestaurantRequestDTO struct {
 	Description *string `json:"description" validate:"omitempty,min=5,max=100"`
 	Address     string  `json:"address" validate:"required,min=5"`
 	Phone       *string `json:"phone" validate:"omitempty,e164,min=10,max=15"`
-	IsOpen      bool    `json:"is_open" validate:"required"`
+	IsOpen      bool    `json:"is_open"`
 }
 
 type RestaurantResponseDTO struct {

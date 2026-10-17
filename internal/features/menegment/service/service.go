@@ -27,6 +27,18 @@ type MenegmentRepository interface {
 		restID uuid.UUID,
 		ownerID uuid.UUID,
 	) (domain.RestaurantResponse, error)
+	GetRestaurants(
+		ctx context.Context,
+		ownerID uuid.UUID,
+	) ([]domain.RestaurantResponse, error)
+	GetCategories(
+		ctx context.Context,
+		restID uuid.UUID,
+	) ([]domain.CategoryResponse, error)
+	GetDishes(
+		ctx context.Context,
+		restID uuid.UUID,
+	) ([]domain.DishResponse, error)
 	AddCategory(
 		ctx context.Context,
 		category domain.CategoryRequest,
