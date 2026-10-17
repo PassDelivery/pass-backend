@@ -89,7 +89,7 @@ type CategoryResponseDTO struct {
 	ID        uuid.UUID `json:"id"`
 	RestID    uuid.UUID `json:"restaurant_id"`
 	Name      string    `json:"name"`
-	SortOrder string    `json:"sort_order"`
+	SortOrder *int      `json:"sort_order"`
 }
 
 type DishRequestDTO struct {

@@ -45,7 +45,7 @@ type CategoryResponse struct {
 	ID        uuid.UUID 
 	RestID    uuid.UUID
 	Name      string 
-	SortOrder string 
+	SortOrder *int
 }
 
 type DishRequest struct {

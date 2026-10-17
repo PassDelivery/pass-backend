@@ -166,7 +166,7 @@ func (u *UserRequest) Validate() error {
 		return fmt.Errorf("name is required: %w", core_errors.ErrInvalidArgument)
 	}
 
-	if (*u.Phone)[0] != '+' || len(*u.Phone) < 12 {
+	if u.Phone != nil && (len(*u.Phone) < 12 || (*u.Phone)[0] != '+') {
 		return fmt.Errorf("Number hasnt first + or len < 12 symbols: %w", core_errors.ErrInvalidArgument)
 	}
 
@@ -187,7 +187,7 @@ func (u *GetUserResponse) Validate() error {
 		return fmt.Errorf("name is required: %w", core_errors.ErrInvalidArgument)
 	}
 
-	if len(*u.Phone) != 0 {
+	if u.Phone != nil && len(*u.Phone) != 0 {
 		if (*u.Phone)[0] != '+' || len(*u.Phone) < 12 {
 			return fmt.Errorf("Number hasnt first + or len < 12 symbols: %w", core_errors.ErrInvalidArgument)
 		}

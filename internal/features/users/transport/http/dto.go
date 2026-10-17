@@ -169,7 +169,7 @@ func (d *UserPatchDTO) Validate() error {
 	}
 
 	if d.Phone.Set {
-		if *d.Phone.Value == "" {
+		if d.Phone.Value == nil || *d.Phone.Value == "" {
 			return nil
 		}
 		if ok := strings.Contains(*d.Phone.Value, "+"); !ok {
@@ -198,16 +198,16 @@ func (d *AddressPatchDTO) Validate() error {
 
 	if d.Street.Set {
 		if d.Street.Value == nil {
-			return fmt.Errorf("city cant be null")
+			return fmt.Errorf("street cant be null")
 		}
 		if len(*d.Street.Value) <= 2 {
-			return fmt.Errorf("len city cant be < 3")
+			return fmt.Errorf("len street cant be < 3")
 		}
 	}
 
 	if d.House.Set {
 		if d.House.Value == nil {
-			return fmt.Errorf("city cant be null")
+			return fmt.Errorf("house cant be null")
 		}
 		_, err := strconv.Atoi(*d.House.Value)
 		if err != nil {
@@ -217,19 +217,19 @@ func (d *AddressPatchDTO) Validate() error {
 
 	if d.Apartment.Set {
 		if d.Apartment.Value == nil {
-			return fmt.Errorf("city cant be null")
+			return fmt.Errorf("apartment cant be null")
 		}
 		if *d.Apartment.Value != "" {
 			_, err := strconv.Atoi(*d.Apartment.Value)
 			if err != nil {
-				return fmt.Errorf("house number is word")
+				return fmt.Errorf("apartment number is word")
 			}
 		}
 	}
 
 	if d.Comment.Set {
 		if d.Comment.Value == nil {
-			return fmt.Errorf("city cant be null")
+			return fmt.Errorf("comment cant be null")
 		}
 		if *d.Comment.Value != "" {
 			if len(*d.Comment.Value) < 5 {
@@ -243,7 +243,7 @@ func (d *AddressPatchDTO) Validate() error {
 
 	if d.IsDefault.Set {
 		if d.IsDefault.Value == nil {
-			return fmt.Errorf("city cant be null")
+			return fmt.Errorf("is_default cant be null")
 		}
 	}
 	return nil
