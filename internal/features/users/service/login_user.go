@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/PassDelivery/pass-backend/internal/core/domain"
+	core_errors "github.com/PassDelivery/pass-backend/internal/core/errors"
 	core_jwt "github.com/PassDelivery/pass-backend/internal/core/jwt"
 )
 
@@ -21,6 +22,9 @@ func (s *UsersService) LoginUser(
 	if err != nil {
 		return domain.UserResponse{}, fmt.Errorf("get email from repository: %w", err)
 	}
+	if email == "" {
+		return domain.UserResponse{}, fmt.Errorf("invalid email or password: %w", core_errors.ErrUnauthtorize)
+	}
 
 	user, hash, err := s.usersRepository.GetUserByEmail(ctx, email)
 	if err != nil {
@@ -28,7 +32,7 @@ func (s *UsersService) LoginUser(
 	}
 
 	if ok := core_jwt.CheckPassword(password, hash); !ok {
-		return domain.UserResponse{}, fmt.Errorf("check password: %w", err)
+		return domain.UserResponse{}, fmt.Errorf("invalid email or password: %w", core_errors.ErrUnauthtorize)
 	}
 
 	token, err := s.tokenService.Generate(user.ID, user.Role)

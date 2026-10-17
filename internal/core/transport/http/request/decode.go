@@ -2,9 +2,11 @@ package core_http_request
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 
+	core_errors "github.com/PassDelivery/pass-backend/internal/core/errors"
 	"github.com/go-playground/validator/v10"
 )
 
@@ -16,7 +18,7 @@ type validatble interface {
 
 func DecodeAndValidateRequest(r *http.Request, dest any) error {
 	if err := json.NewDecoder(r.Body).Decode(dest); err != nil {
-		return fmt.Errorf("decode json: %w", err)
+		return fmt.Errorf("decode json: %v: %w", err, core_errors.ErrInvalidArgument)
 	}
 
 	var err error
@@ -26,6 +28,9 @@ func DecodeAndValidateRequest(r *http.Request, dest any) error {
 		err = v.Validate()
 	}else {
 		err = requestValidator.Struct(dest)
+	}
+	if err != nil && !errors.Is(err, core_errors.ErrInvalidArgument) {
+		return fmt.Errorf("request validation: %v: %w", err, core_errors.ErrInvalidArgument)
 	}
 	if err != nil {
 		return fmt.Errorf("request validation: %w", err)
