@@ -39,7 +39,16 @@ func (s *UsersHTTPHandler) PatchUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	responseHandler.JSONResponse(userResponse, http.StatusOK)
+	userResp := GetUserResponseDTO{
+		ID: userResponse.ID,
+		Email: userResponse.Email,
+		Name: userResponse.Name,
+		Phone: userResponse.Phone,
+		Role: string(userResponse.Role),
+		CreatedAt: userResponse.CreatedAt,
+	}
+
+	responseHandler.JSONResponse(userResp, http.StatusOK)
 }
 
 func userPatchFromRequest(r UserPatchDTO) domain.UserPatch {

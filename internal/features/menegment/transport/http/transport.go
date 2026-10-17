@@ -26,6 +26,17 @@ type MenegmentService interface {
 		rest domain.RestaurantPatch,
 		restID uuid.UUID,
 	) (domain.RestaurantResponse, error)
+	GetRestaurants(
+		ctx context.Context,
+	) ([]domain.RestaurantResponse, error)
+	GetCategories(
+		ctx context.Context,
+		restID uuid.UUID,
+	) ([]domain.CategoryResponse, error)
+	GetDishes(
+		ctx context.Context,
+		restID uuid.UUID,
+	) ([]domain.DishResponse, error)
 	AddCategory(
 		ctx context.Context,
 		category domain.CategoryRequest,
@@ -57,6 +68,17 @@ func NewMenegmentHTTPHandler(ms MenegmentService, token *core_jwt.TokenService) 
 func (h *MenegmentHTTPHandler) Routes() []core_http_server.Route {
 	return []core_http_server.Route{
 		{
+			Method:  http.MethodGet,
+			Path:    "/internal/restaurants",
+			Handler: h.GetRestaurants,
+			Middleware: []core_http_middleware.Middleware{
+				core_http_middleware.Auth(h.token),
+				core_http_middleware.RequireRole(
+					domain.RoleRestaurantOwner,
+				),
+			},
+		},
+		{
 			Method:  http.MethodPost,
 			Path:    "/internal/restaurants",
 			Handler: h.RegisterRestaurant,
@@ -79,9 +101,31 @@ func (h *MenegmentHTTPHandler) Routes() []core_http_server.Route {
 			},
 		},
 				{
+			Method:  http.MethodGet,
+			Path:    "/internal/restaurants/{id}/categories",
+			Handler: h.GetCategories,
+			Middleware: []core_http_middleware.Middleware{
+				core_http_middleware.Auth(h.token),
+				core_http_middleware.RequireRole(
+					domain.RoleRestaurantOwner,
+				),
+			},
+		},
+		{
 			Method:  http.MethodPost,
 			Path:    "/internal/restaurants/{id}/categories",
 			Handler: h.AddCategory,
+			Middleware: []core_http_middleware.Middleware{
+				core_http_middleware.Auth(h.token),
+				core_http_middleware.RequireRole(
+					domain.RoleRestaurantOwner,
+				),
+			},
+		},
+		{
+			Method:  http.MethodGet,
+			Path:    "/internal/restaurants/{id}/dishes",
+			Handler: h.GetDishes,
 			Middleware: []core_http_middleware.Middleware{
 				core_http_middleware.Auth(h.token),
 				core_http_middleware.RequireRole(
